@@ -1,0 +1,76 @@
+{
+  "common": {
+    "hours": "Std",
+    "error": {
+      "generic": "❌ Es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+      "noPermission": "❌ Dafür benötigst du die Berechtigung „Server verwalten“.",
+      "invalidDuration": "❌ Ich konnte die Dauer „{{input}}“ nicht verstehen. Beispiele: `2h`, `1,5h`, `90m`, `1:30`.",
+      "invalidDate": "❌ Ich konnte das Datum „{{input}}“ nicht verstehen. Beispiele: `2026-09-14`, `14.09.2026`, `heute`, `gestern`.",
+      "futureDate": "❌ Das Datum darf nicht in der Zukunft liegen."
+    }
+  },
+  "checkin": {
+    "panelTitle": "🕒 Check-in Panel",
+    "panelDescription": "Klicke auf den Button, um deine Arbeitszeit zu starten.",
+    "success": "✅ Eingecheckt um {{time}} Uhr.",
+    "alreadyIn": "⚠️ Du bist bereits seit {{since}} Uhr eingecheckt."
+  },
+  "checkout": {
+    "success": "✅ Ausgecheckt! Du hast **{{duration}}** gearbeitet.\n📝 {{description}}",
+    "notCheckedIn": "❌ Du bist aktuell nicht eingecheckt. Nutze zuerst `/checkin`."
+  },
+  "log": {
+    "success": "✅ Zeit erfasst: **{{duration}}** am {{date}} für {{user}}.\n📝 {{description}}"
+  },
+  "ausgabe": {
+    "success": "✅ Ausgabe erfasst: **{{amount}}** für „{{description}}“ ({{category}}) am {{date}}.",
+    "categoryNormalized": "\nℹ️ Kategorie als „{{category}}“ übernommen (ähnlich zu deiner Eingabe)."
+  },
+  "stats": {
+    "title": "📊 Wochenübersicht ({{start}} – {{end}})",
+    "noData": "Für diese Woche liegen noch keine Daten vor.",
+    "totalLabel": "Gesamt",
+    "memberField": "{{hours}} • {{sessions}} Check-ins • {{expenses}} Ausgaben"
+  },
+  "help": {
+    "title": "🛟 FounderClock – Befehlsübersicht",
+    "description": "Zeiterfassung, Ausgaben und Anteile für dein Startup-Team.",
+    "checkin": "Öffnet ein Panel mit Check-in Button.",
+    "checkout": "Checkt dich aus und erfasst eine Pflicht-Beschreibung.",
+    "log": "Trägt nachträglich eine Zeit ein: `/log 2h \"Beschreibung\" 2026-09-14`.",
+    "ausgabe": "Erfasst eine Ausgabe: `/ausgabe 200 \"3D Drucker\"`.",
+    "stats": "Zeigt die Wochenübersicht aller Mitglieder.",
+    "export": "Lädt Zeiten und/oder Ausgaben als CSV herunter.",
+    "import": "Importiert Zeiten oder Ausgaben aus einer CSV-Datei (nur Admins).",
+    "anteile": "Startet oder prüft die quartalsweise Anteilsberechnung.",
+    "sprache": "Stellt deine persönliche Sprache um (DE/EN)."
+  },
+  "export": {
+    "noData": "Für den gewählten Zeitraum liegen keine Daten vor.",
+    "successSessions": "📄 {{count}} Zeiteinträge exportiert.",
+    "successExpenses": "📄 {{count}} Ausgaben exportiert."
+  },
+  "import": {
+    "summary": "✅ Import abgeschlossen: **{{success}}** von {{total}} Zeilen übernommen.",
+    "errorsHeader": "⚠️ Fehler in folgenden Zeilen:",
+    "downloadFailed": "❌ Die Datei konnte nicht heruntergeladen werden.",
+    "missingColumns": "❌ Pflichtspalten fehlen oder konnten nicht erkannt werden: {{columns}}"
+  },
+  "sprache": {
+    "success": "✅ Deine Sprache wurde auf **Deutsch** umgestellt."
+  },
+  "anteile": {
+    "noData": "❌ Es liegen noch keine Zeiten oder Ausgaben vor, auf deren Basis Anteile berechnet werden könnten.",
+    "alreadyExists": "⚠️ Für Q{{quarter}} {{year}} wurde bereits eine Berechnung gestartet oder abgeschlossen. Nutze `/anteile status`.",
+    "pendingElsewhere": "⚠️ Es läuft bereits eine offene Anteilsberechnung. Nutze `/anteile status`.",
+    "panelTitle": "📈 Anteilsberechnung Q{{quarter}} {{year}}",
+    "panelDescription": "Berechnungsgrundlage: {{hourlyRate}} pro Stunde + eingereichte Ausgaben. Alle Mitglieder mit erfassten Beiträgen müssen bestätigen.",
+    "confirmed": "✅ Danke, deine Bestätigung wurde gespeichert.",
+    "rejected": "❌ Die Anteilsberechnung wurde abgelehnt und abgebrochen.",
+    "notEligible": "⚠️ Du bist an dieser Anteilsberechnung nicht beteiligt.",
+    "alreadyConfirmed": "ℹ️ Du hast bereits bestätigt.",
+    "completed": "🎉 Alle Mitglieder haben bestätigt! Die Anteilsberechnung für Q{{quarter}} {{year}} ist abgeschlossen.",
+    "statusNone": "ℹ️ Aktuell läuft keine Anteilsberechnung.",
+    "statusPending": "⏳ Anteilsberechnung Q{{quarter}} {{year}} läuft. Bestätigt: {{confirmed}}/{{total}}."
+  }
+}

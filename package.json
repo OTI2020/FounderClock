@@ -1,0 +1,21 @@
+{
+  "name": "founderclock",
+  "version": "1.0.0",
+  "description": "Discord-Bot für Startup-Teams: Zeiterfassung, Ausgaben und Anteilsberechnung.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dayjs": "^1.11.13",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  }
+}

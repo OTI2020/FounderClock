@@ -1,0 +1,76 @@
+{
+  "common": {
+    "hours": "h",
+    "error": {
+      "generic": "❌ Something went wrong. Please try again.",
+      "noPermission": "❌ You need the “Manage Server” permission for this.",
+      "invalidDuration": "❌ I couldn't understand the duration “{{input}}”. Examples: `2h`, `1.5h`, `90m`, `1:30`.",
+      "invalidDate": "❌ I couldn't understand the date “{{input}}”. Examples: `2026-09-14`, `14.09.2026`, `today`, `yesterday`.",
+      "futureDate": "❌ The date can't be in the future."
+    }
+  },
+  "checkin": {
+    "panelTitle": "🕒 Check-in panel",
+    "panelDescription": "Click the button below to start your work time.",
+    "success": "✅ Checked in at {{time}}.",
+    "alreadyIn": "⚠️ You've already been checked in since {{since}}."
+  },
+  "checkout": {
+    "success": "✅ Checked out! You worked for **{{duration}}**.\n📝 {{description}}",
+    "notCheckedIn": "❌ You are not checked in. Use `/checkin` first."
+  },
+  "log": {
+    "success": "✅ Time logged: **{{duration}}** on {{date}} for {{user}}.\n📝 {{description}}"
+  },
+  "ausgabe": {
+    "success": "✅ Expense logged: **{{amount}}** for “{{description}}” ({{category}}) on {{date}}.",
+    "categoryNormalized": "\nℹ️ Category recorded as “{{category}}” (matched your input)."
+  },
+  "stats": {
+    "title": "📊 Weekly overview ({{start}} – {{end}})",
+    "noData": "No data recorded for this week yet.",
+    "totalLabel": "Total",
+    "memberField": "{{hours}} • {{sessions}} check-ins • {{expenses}} expenses"
+  },
+  "help": {
+    "title": "🛟 FounderClock – Command overview",
+    "description": "Time tracking, expenses, and equity for your startup team.",
+    "checkin": "Opens a panel with a check-in button.",
+    "checkout": "Checks you out and logs a required description.",
+    "log": "Logs time retroactively: `/log 2h \"description\" 2026-09-14`.",
+    "ausgabe": "Logs an expense: `/ausgabe 200 \"3D printer\"`.",
+    "stats": "Shows the weekly overview for all members.",
+    "export": "Downloads time entries and/or expenses as CSV.",
+    "import": "Imports time entries or expenses from a CSV file (admins only).",
+    "anteile": "Starts or checks the quarterly equity calculation.",
+    "sprache": "Switches your personal language (DE/EN)."
+  },
+  "export": {
+    "noData": "No data found for the selected time range.",
+    "successSessions": "📄 Exported {{count}} time entries.",
+    "successExpenses": "📄 Exported {{count}} expenses."
+  },
+  "import": {
+    "summary": "✅ Import complete: **{{success}}** of {{total}} rows imported.",
+    "errorsHeader": "⚠️ Errors in the following rows:",
+    "downloadFailed": "❌ The file could not be downloaded.",
+    "missingColumns": "❌ Required columns missing or not recognized: {{columns}}"
+  },
+  "sprache": {
+    "success": "✅ Your language has been set to **English**."
+  },
+  "anteile": {
+    "noData": "❌ There is no logged time or expenses yet to calculate equity from.",
+    "alreadyExists": "⚠️ A calculation for Q{{quarter}} {{year}} already exists. Use `/anteile status`.",
+    "pendingElsewhere": "⚠️ There is already an open equity calculation. Use `/anteile status`.",
+    "panelTitle": "📈 Equity calculation Q{{quarter}} {{year}}",
+    "panelDescription": "Basis: {{hourlyRate}} per hour + submitted expenses. All members with recorded contributions must confirm.",
+    "confirmed": "✅ Thanks, your confirmation has been recorded.",
+    "rejected": "❌ The equity calculation was rejected and cancelled.",
+    "notEligible": "⚠️ You are not part of this equity calculation.",
+    "alreadyConfirmed": "ℹ️ You've already confirmed.",
+    "completed": "🎉 Everyone has confirmed! The equity calculation for Q{{quarter}} {{year}} is complete.",
+    "statusNone": "ℹ️ No equity calculation is currently running.",
+    "statusPending": "⏳ Equity calculation Q{{quarter}} {{year}} in progress. Confirmed: {{confirmed}}/{{total}}."
+  }
+}
