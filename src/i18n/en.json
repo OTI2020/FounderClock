@@ -40,8 +40,8 @@
     "log": "Logs time retroactively: `/log 2h \"description\" 2026-09-14`.",
     "ausgabe": "Logs an expense: `/ausgabe 200 \"3D printer\"`.",
     "stats": "Shows the weekly overview for all members.",
-    "export": "Downloads time entries and/or expenses as CSV.",
-    "import": "Imports time entries or expenses from a CSV file (admins only).",
+    "export": "Downloads time entries and/or expenses as CSV or JSON.",
+    "import": "Imports time entries or expenses from a CSV or JSON file (admins only).",
     "anteile": "Starts or checks the quarterly equity calculation.",
     "sprache": "Switches your personal language (DE/EN)."
   },
@@ -54,6 +54,7 @@
     "summary": "✅ Import complete: **{{success}}** of {{total}} rows imported.",
     "errorsHeader": "⚠️ Errors in the following rows:",
     "downloadFailed": "❌ The file could not be downloaded.",
+    "invalidJson": "❌ The JSON file could not be read (expected an array of objects).",
     "missingColumns": "❌ Required columns missing or not recognized: {{columns}}"
   },
   "sprache": {

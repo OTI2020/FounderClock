@@ -59,22 +59,60 @@ async function downloadAttachment(attachment) {
   return response.text();
 }
 
+// Erkennt das Dateiformat anhand von Dateiname/Content-Type, sodass /import
+// sowohl CSV als auch JSON ohne extra Option akzeptiert.
+function isJsonAttachment(attachment) {
+  const name = (attachment.name || '').toLowerCase();
+  if (name.endsWith('.json')) return true;
+  if (name.endsWith('.csv')) return false;
+  return (attachment.contentType || '').includes('json');
+}
+
+// Wandelt ein JSON-Array von Objekten (wie /export es liefert) in dieselbe
+// { headers, records }-Form wie parseCsv um, damit die restliche
+// Validierungs-/Alias-Logik unverändert weiterverwendet werden kann.
+function parseJsonRecords(text) {
+  const data = JSON.parse(text);
+  if (!Array.isArray(data)) throw new Error('JSON ist kein Array');
+
+  const headerSet = new Set();
+  data.forEach((row) => {
+    if (row && typeof row === 'object') Object.keys(row).forEach((k) => headerSet.add(k));
+  });
+  const headers = [...headerSet];
+
+  const records = data.map((row) => {
+    const record = {};
+    headers.forEach((h) => {
+      const value = row ? row[h] : undefined;
+      record[h] = value === undefined || value === null ? '' : String(value).trim();
+    });
+    return record;
+  });
+
+  return { headers, records };
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('import')
-    .setDescription('CSV-Daten importieren (nur Admins) / Import CSV data (admins only)')
+    .setDescription('CSV- oder JSON-Daten importieren (nur Admins) / Import CSV or JSON data (admins only)')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addSubcommand((sub) =>
       sub
         .setName('zeiten')
-        .setDescription('Zeiten aus CSV importieren / Import time entries from CSV')
-        .addAttachmentOption((o) => o.setName('datei').setDescription('CSV-Datei / CSV file').setRequired(true))
+        .setDescription('Zeiten aus CSV/JSON importieren / Import time entries from CSV/JSON')
+        .addAttachmentOption((o) =>
+          o.setName('datei').setDescription('CSV- oder JSON-Datei / CSV or JSON file').setRequired(true)
+        )
     )
     .addSubcommand((sub) =>
       sub
         .setName('ausgaben')
-        .setDescription('Ausgaben aus CSV importieren / Import expenses from CSV')
-        .addAttachmentOption((o) => o.setName('datei').setDescription('CSV-Datei / CSV file').setRequired(true))
+        .setDescription('Ausgaben aus CSV/JSON importieren / Import expenses from CSV/JSON')
+        .addAttachmentOption((o) =>
+          o.setName('datei').setDescription('CSV- oder JSON-Datei / CSV or JSON file').setRequired(true)
+        )
     ),
   async execute(interaction) {
     membersDb.upsertMember(interaction.guildId, interaction.user.id, interaction.user.username);
@@ -92,7 +130,14 @@ module.exports = {
       return;
     }
 
-    const { headers, records } = csv.parseCsv(text);
+    let headers, records;
+    try {
+      ({ headers, records } = isJsonAttachment(attachment) ? parseJsonRecords(text) : csv.parseCsv(text));
+    } catch {
+      await interaction.editReply({ content: t(lang, 'import.invalidJson') });
+      return;
+    }
+
     if (records.length === 0) {
       await interaction.editReply({ content: t(lang, 'export.noData') });
       return;

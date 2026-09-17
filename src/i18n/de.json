@@ -40,8 +40,8 @@
     "log": "Trägt nachträglich eine Zeit ein: `/log 2h \"Beschreibung\" 2026-09-14`.",
     "ausgabe": "Erfasst eine Ausgabe: `/ausgabe 200 \"3D Drucker\"`.",
     "stats": "Zeigt die Wochenübersicht aller Mitglieder.",
-    "export": "Lädt Zeiten und/oder Ausgaben als CSV herunter.",
-    "import": "Importiert Zeiten oder Ausgaben aus einer CSV-Datei (nur Admins).",
+    "export": "Lädt Zeiten und/oder Ausgaben als CSV oder JSON herunter.",
+    "import": "Importiert Zeiten oder Ausgaben aus einer CSV- oder JSON-Datei (nur Admins).",
     "anteile": "Startet oder prüft die quartalsweise Anteilsberechnung.",
     "sprache": "Stellt deine persönliche Sprache um (DE/EN)."
   },
@@ -54,6 +54,7 @@
     "summary": "✅ Import abgeschlossen: **{{success}}** von {{total}} Zeilen übernommen.",
     "errorsHeader": "⚠️ Fehler in folgenden Zeilen:",
     "downloadFailed": "❌ Die Datei konnte nicht heruntergeladen werden.",
+    "invalidJson": "❌ Die JSON-Datei konnte nicht gelesen werden (erwartet wird ein Array von Objekten).",
     "missingColumns": "❌ Pflichtspalten fehlen oder konnten nicht erkannt werden: {{columns}}"
   },
   "sprache": {

@@ -12,7 +12,7 @@ const EXPENSE_HEADERS = ['user_id', 'username', 'date', 'amount', 'currency', 'd
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('export')
-    .setDescription('Daten als CSV exportieren / Export data as CSV')
+    .setDescription('Daten als CSV oder JSON exportieren / Export data as CSV or JSON')
     .addStringOption((o) =>
       o
         .setName('typ')
@@ -24,6 +24,13 @@ module.exports = {
           { name: 'Ausgaben / Expenses', value: 'ausgaben' }
         )
     )
+    .addStringOption((o) =>
+      o
+        .setName('format')
+        .setDescription('Dateiformat / File format')
+        .setRequired(false)
+        .addChoices({ name: 'CSV', value: 'csv' }, { name: 'JSON', value: 'json' })
+    )
     .addStringOption((o) => o.setName('von').setDescription('Startdatum / Start date').setRequired(false))
     .addStringOption((o) => o.setName('bis').setDescription('Enddatum / End date').setRequired(false)),
   async execute(interaction) {
@@ -31,6 +38,7 @@ module.exports = {
     const lang = membersDb.getLanguage(interaction.guildId, interaction.user.id);
 
     const typ = interaction.options.getString('typ') || 'beides';
+    const format = interaction.options.getString('format') || 'csv';
     const vonInput = interaction.options.getString('von');
     const bisInput = interaction.options.getString('bis');
 
@@ -48,6 +56,13 @@ module.exports = {
     const attachments = [];
     const summaries = [];
 
+    function buildFile(rows, headers, baseName) {
+      if (format === 'json') {
+        return { content: JSON.stringify(rows, null, 2), name: `${baseName}.json` };
+      }
+      return { content: csv.toCsv(headers, rows), name: `${baseName}.csv` };
+    }
+
     if (typ === 'beides' || typ === 'zeiten') {
       const rows = sessionsDb.getRangeSessions(interaction.guildId, von, bis).map((s) => ({
         user_id: s.user_id,
@@ -58,8 +73,8 @@ module.exports = {
         source: s.source,
       }));
       if (rows.length > 0) {
-        const content = csv.toCsv(SESSION_HEADERS, rows);
-        attachments.push(new AttachmentBuilder(Buffer.from(content, 'utf-8'), { name: 'zeiten.csv' }));
+        const file = buildFile(rows, SESSION_HEADERS, 'zeiten');
+        attachments.push(new AttachmentBuilder(Buffer.from(file.content, 'utf-8'), { name: file.name }));
         summaries.push(t(lang, 'export.successSessions', { count: rows.length }));
       }
     }
@@ -75,8 +90,8 @@ module.exports = {
         category: e.category || '',
       }));
       if (rows.length > 0) {
-        const content = csv.toCsv(EXPENSE_HEADERS, rows);
-        attachments.push(new AttachmentBuilder(Buffer.from(content, 'utf-8'), { name: 'ausgaben.csv' }));
+        const file = buildFile(rows, EXPENSE_HEADERS, 'ausgaben');
+        attachments.push(new AttachmentBuilder(Buffer.from(file.content, 'utf-8'), { name: file.name }));
         summaries.push(t(lang, 'export.successExpenses', { count: rows.length }));
       }
     }
