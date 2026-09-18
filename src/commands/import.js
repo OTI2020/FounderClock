@@ -26,6 +26,26 @@ const EXPENSE_ALIASES = {
   category: ['category', 'kategorie', 'kat'],
 };
 
+function normalizeHeader(str) {
+  return String(str)
+    .toLowerCase()
+    .replace(/[^a-z0-9äöüß]+/g, '');
+}
+
+function headerTokens(str) {
+  return String(str)
+    .toLowerCase()
+    .split(/[^a-zäöüß0-9]+/)
+    .filter(Boolean);
+}
+
+// Findet die passende Spalte für einen kanonischen Namen (z. B. "date") unter
+// mehreren Aliassen. Geprüft wird in aufsteigender Toleranz, damit ein exakter
+// Treffer nie von einem zufälligen Fuzzy-Treffer überschrieben wird:
+//   1) exakte Übereinstimmung (case-insensitive)
+//   2) Alias als eigenes Wort im Spaltennamen ("Start Date" -> "date")
+//   3) Alias als Teilstring nach Entfernen von Leer-/Sonderzeichen ("user-id")
+//   4) Tippfehler-Toleranz per Levenshtein-Distanz ("Beschreibng")
 function resolveHeaders(headers, aliasMap) {
   const resolved = {};
   const missing = [];
@@ -33,7 +53,22 @@ function resolveHeaders(headers, aliasMap) {
 
   for (const [canonical, aliases] of Object.entries(aliasMap)) {
     const availableHeaders = headers.filter((h) => !usedHeaders.has(h));
-    let found = availableHeaders.find((h) => aliases.includes(h.toLowerCase()));
+
+    let found = availableHeaders.find((h) => aliases.includes(h.toLowerCase().trim()));
+
+    if (!found) {
+      found = availableHeaders.find((h) => {
+        const tokens = headerTokens(h);
+        return aliases.some((alias) => tokens.includes(alias));
+      });
+    }
+
+    if (!found) {
+      found = availableHeaders.find((h) => {
+        const normalizedHeader = normalizeHeader(h);
+        return aliases.some((alias) => normalizedHeader.includes(normalizeHeader(alias)));
+      });
+    }
 
     if (!found) {
       const candidates = aliases
