@@ -41,7 +41,7 @@
     "ausgabe": "Logs an expense: `/ausgabe 200 \"3D printer\"`.",
     "stats": "Shows the weekly overview for all members.",
     "export": "Downloads time entries and/or expenses as CSV or JSON.",
-    "import": "Imports time entries or expenses from a CSV or JSON file (admins only).",
+    "import": "Imports time entries or expenses from a CSV, JSON or Excel file (admins only).",
     "anteile": "Starts or checks the quarterly equity calculation.",
     "sprache": "Switches your personal language (DE/EN)."
   },
@@ -55,6 +55,7 @@
     "errorsHeader": "⚠️ Errors in the following rows:",
     "downloadFailed": "❌ The file could not be downloaded.",
     "invalidJson": "❌ The JSON file could not be read (expected an array of objects).",
+    "invalidExcel": "❌ The Excel file could not be read. Please upload as .xlsx, with the first row as column headers.",
     "missingColumns": "❌ Required columns missing or not recognized: {{columns}}"
   },
   "sprache": {

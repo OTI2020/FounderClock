@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const ExcelJS = require('exceljs');
 const { t } = require('../i18n');
 const membersDb = require('../database/members');
 const sessionsDb = require('../database/sessions');
@@ -56,23 +57,28 @@ function resolveHeaders(headers, aliasMap) {
 async function downloadAttachment(attachment) {
   const response = await fetch(attachment.url);
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.text();
+  return Buffer.from(await response.arrayBuffer());
 }
 
 // Erkennt das Dateiformat anhand von Dateiname/Content-Type, sodass /import
-// sowohl CSV als auch JSON ohne extra Option akzeptiert.
-function isJsonAttachment(attachment) {
+// CSV, JSON und Excel ohne extra Option unterscheiden kann.
+function detectFormat(attachment) {
   const name = (attachment.name || '').toLowerCase();
-  if (name.endsWith('.json')) return true;
-  if (name.endsWith('.csv')) return false;
-  return (attachment.contentType || '').includes('json');
+  if (name.endsWith('.xlsx') || name.endsWith('.xls')) return 'excel';
+  if (name.endsWith('.json')) return 'json';
+  if (name.endsWith('.csv')) return 'csv';
+
+  const contentType = (attachment.contentType || '').toLowerCase();
+  if (contentType.includes('spreadsheet') || contentType.includes('ms-excel')) return 'excel';
+  if (contentType.includes('json')) return 'json';
+  return 'csv';
 }
 
 // Wandelt ein JSON-Array von Objekten (wie /export es liefert) in dieselbe
 // { headers, records }-Form wie parseCsv um, damit die restliche
 // Validierungs-/Alias-Logik unverändert weiterverwendet werden kann.
-function parseJsonRecords(text) {
-  const data = JSON.parse(text);
+function parseJsonRecords(buffer) {
+  const data = JSON.parse(buffer.toString('utf-8'));
   if (!Array.isArray(data)) throw new Error('JSON ist kein Array');
 
   const headerSet = new Set();
@@ -93,25 +99,53 @@ function parseJsonRecords(text) {
   return { headers, records };
 }
 
+// Liest das erste Tabellenblatt einer Excel-Datei (erste Zeile = Kopfzeile)
+// in dieselbe { headers, records }-Form wie parseCsv/parseJsonRecords.
+async function parseExcelRecords(buffer) {
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(buffer);
+  const sheet = workbook.worksheets[0];
+  if (!sheet) throw new Error('Keine Tabellenblätter gefunden');
+
+  const headers = [];
+  sheet.getRow(1).eachCell({ includeEmpty: false }, (cell, colNumber) => {
+    headers[colNumber] = String(cell.value ?? '').trim();
+  });
+
+  const records = [];
+  sheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    const record = {};
+    headers.forEach((h, colNumber) => {
+      if (!h) return;
+      const value = row.getCell(colNumber).value;
+      record[h] = value === null || value === undefined ? '' : String(value).trim();
+    });
+    records.push(record);
+  });
+
+  return { headers: headers.filter(Boolean), records };
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('import')
-    .setDescription('CSV- oder JSON-Daten importieren (nur Admins) / Import CSV or JSON data (admins only)')
+    .setDescription('CSV-, JSON- oder Excel-Daten importieren (nur Admins) / Import CSV, JSON or Excel data (admins only)')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addSubcommand((sub) =>
       sub
         .setName('zeiten')
-        .setDescription('Zeiten aus CSV/JSON importieren / Import time entries from CSV/JSON')
+        .setDescription('Zeiten aus CSV/JSON/Excel importieren / Import time entries from CSV/JSON/Excel')
         .addAttachmentOption((o) =>
-          o.setName('datei').setDescription('CSV- oder JSON-Datei / CSV or JSON file').setRequired(true)
+          o.setName('datei').setDescription('CSV-, JSON- oder .xlsx-Datei / CSV, JSON or .xlsx file').setRequired(true)
         )
     )
     .addSubcommand((sub) =>
       sub
         .setName('ausgaben')
-        .setDescription('Ausgaben aus CSV/JSON importieren / Import expenses from CSV/JSON')
+        .setDescription('Ausgaben aus CSV/JSON/Excel importieren / Import expenses from CSV/JSON/Excel')
         .addAttachmentOption((o) =>
-          o.setName('datei').setDescription('CSV- oder JSON-Datei / CSV or JSON file').setRequired(true)
+          o.setName('datei').setDescription('CSV-, JSON- oder .xlsx-Datei / CSV, JSON or .xlsx file').setRequired(true)
         )
     ),
   async execute(interaction) {
@@ -122,19 +156,28 @@ module.exports = {
 
     await interaction.deferReply({ ephemeral: true });
 
-    let text;
+    let buffer;
     try {
-      text = await downloadAttachment(attachment);
+      buffer = await downloadAttachment(attachment);
     } catch {
       await interaction.editReply({ content: t(lang, 'import.downloadFailed') });
       return;
     }
 
+    const format = detectFormat(attachment);
     let headers, records;
     try {
-      ({ headers, records } = isJsonAttachment(attachment) ? parseJsonRecords(text) : csv.parseCsv(text));
+      if (format === 'excel') {
+        ({ headers, records } = await parseExcelRecords(buffer));
+      } else if (format === 'json') {
+        ({ headers, records } = parseJsonRecords(buffer));
+      } else {
+        ({ headers, records } = csv.parseCsv(buffer.toString('utf-8')));
+      }
     } catch {
-      await interaction.editReply({ content: t(lang, 'import.invalidJson') });
+      await interaction.editReply({
+        content: t(lang, format === 'excel' ? 'import.invalidExcel' : 'import.invalidJson'),
+      });
       return;
     }
 

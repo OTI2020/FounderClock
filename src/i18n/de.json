@@ -41,7 +41,7 @@
     "ausgabe": "Erfasst eine Ausgabe: `/ausgabe 200 \"3D Drucker\"`.",
     "stats": "Zeigt die Wochenübersicht aller Mitglieder.",
     "export": "Lädt Zeiten und/oder Ausgaben als CSV oder JSON herunter.",
-    "import": "Importiert Zeiten oder Ausgaben aus einer CSV- oder JSON-Datei (nur Admins).",
+    "import": "Importiert Zeiten oder Ausgaben aus einer CSV-, JSON- oder Excel-Datei (nur Admins).",
     "anteile": "Startet oder prüft die quartalsweise Anteilsberechnung.",
     "sprache": "Stellt deine persönliche Sprache um (DE/EN)."
   },
@@ -55,6 +55,7 @@
     "errorsHeader": "⚠️ Fehler in folgenden Zeilen:",
     "downloadFailed": "❌ Die Datei konnte nicht heruntergeladen werden.",
     "invalidJson": "❌ Die JSON-Datei konnte nicht gelesen werden (erwartet wird ein Array von Objekten).",
+    "invalidExcel": "❌ Die Excel-Datei konnte nicht gelesen werden. Bitte als .xlsx hochladen, erste Zeile = Spaltenüberschriften.",
     "missingColumns": "❌ Pflichtspalten fehlen oder konnten nicht erkannt werden: {{columns}}"
   },
   "sprache": {

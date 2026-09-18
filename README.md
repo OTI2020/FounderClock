@@ -102,8 +102,8 @@ Mit gesetzter `GUILD_ID` werden die Commands nur in diesem Server registriert (s
 | `/ausgabe betrag:200 beschreibung:"..." [kategorie] [datum]` | Erfasst eine Ausgabe, z. B. `/ausgabe 200 "3D Drucker"`. |
 | `/stats [woche]` | Wochenübersicht aller Mitglieder (Stunden, Check-ins, Ausgaben). `woche:0` = aktuell, `1` = letzte Woche usw. |
 | `/help` | Zeigt alle Befehle in der eigenen Sprache. |
-| `/export [typ] [von] [bis]` | Lädt Zeiten und/oder Ausgaben als CSV herunter. |
-| `/import zeiten\|ausgaben datei:*.csv` | Importiert eine CSV-Datei (nur Mitglieder mit „Server verwalten“). |
+| `/export [typ] [format] [von] [bis]` | Lädt Zeiten und/oder Ausgaben als CSV oder JSON herunter. |
+| `/import zeiten\|ausgaben datei:*.csv\|*.json\|*.xlsx` | Importiert eine CSV-, JSON- oder Excel-Datei (nur Mitglieder mit „Server verwalten“). |
 | `/anteile start [stundensatz]` | Startet eine neue Anteilsberechnung fürs laufende Quartal (nur Admins). |
 | `/anteile status` | Zeigt den Bestätigungsstatus der laufenden Berechnung. |
 | `/sprache wert:de\|en` | Stellt deine persönliche Sprache um. |
@@ -122,12 +122,17 @@ Anteil(Mitglied) %     = Beitragswert(Mitglied) / Summe aller Beitragswerte × 1
 - Bestätigen müssen alle Mitglieder, die Stunden **oder** Ausgaben beigetragen haben (nicht der gesamte Discord-Server). Klickt jemand auf „Ablehnen“, wird die Berechnung komplett verworfen und kann neu gestartet werden.
 - Der Stundensatz kann pro Berechnung über die Option `stundensatz` überschrieben werden; der Wert wird dann als neuer Standard gespeichert.
 
-## CSV Export/Import
+## Export/Import (CSV, JSON, Excel)
 
-**Zeiten** (`zeiten.csv`): `user_id, username, date, hours, description, source`
-**Ausgaben** (`ausgaben.csv`): `user_id, username, date, amount, currency, description, category`
+**Zeiten**: `user_id, username, date, hours, description, source`
+**Ausgaben**: `user_id, username, date, amount, currency, description, category`
 
-Beim Import sind nur `user_id`, `date` und `hours`/`amount` Pflichtfelder – `username` wird ignoriert (dient nur der Lesbarkeit). Der Import ist tolerant gegenüber Spaltennamen: Sowohl deutsche als auch englische Varianten sowie leichte Tippfehler in der Kopfzeile werden per Fuzzy-Matching erkannt (z. B. „Beschreibng“ → `description`, „Stunden“ → `hours`). `user_id` muss die numerische Discord-User-ID sein.
+- `/export` erzeugt wahlweise CSV oder JSON (Option `format`).
+- `/import` erkennt das Format automatisch an der Dateiendung (`.csv`, `.json`, `.xlsx`) – keine extra Angabe nötig. Bei Excel wird das erste Tabellenblatt gelesen, erste Zeile = Kopfzeile.
+- Nur `user_id`, `date` und `hours`/`amount` sind Pflichtfelder – `username` wird beim Import ignoriert (dient nur der Lesbarkeit).
+- Der Import ist tolerant gegenüber Spaltennamen: Sowohl deutsche als auch englische Varianten sowie leichte Tippfehler in der Kopfzeile werden per Fuzzy-Matching erkannt (z. B. „Beschreibng“ → `description`, „Stunden“ → `hours`).
+- `user_id` muss die numerische Discord-User-ID sein.
+- Export aus anderen Zeiterfassungstools: Excel bevorzugen, falls verfügbar (strukturiertes Format, wird direkt unterstützt). PDF-Exporte werden bewusst nicht automatisch geparst (zu layoutabhängig/fehleranfällig) – hier vorher manuell nach CSV/Excel umwandeln.
 
 ## Mehrsprachigkeit
 
